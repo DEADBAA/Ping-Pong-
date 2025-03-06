@@ -53,6 +53,8 @@ class Ping_Ball(GameSprite):
         super().__init__(x, y, width, height, speed, image_filename)
         self.speed_x, self.speed_y = speed, speed
         self.last_angle = None
+        self.hit_wall_sound = mixer.Sound("hit_wall.mp3")
+        self.hit_racket_sound = mixer.Sound("hit_racket.mp3")
         
     def update(self):
         self.rect.x += self.speed_x
@@ -60,11 +62,13 @@ class Ping_Ball(GameSprite):
 
         if self.rect.x <=0:
             self.speed_x *= -1 
+            self.hit_wall_sound.play()
             global score_p2_counter
             score_p2_counter += 1
             
         if self.rect.x >= Win_W:
             self.speed_x *= -1 
+            self.hit_wall_sound.play()
             global score_p1_counter
             score_p1_counter += 1  
 
@@ -73,6 +77,7 @@ class Ping_Ball(GameSprite):
 
         if sprite.spritecollide(self, players, False):
             possible_angles = [1, 2, 3]
+            self.hit_racket_sound.play()
 
             if self.last_angle in possible_angles:
                 possible_angles.remove(self.last_angle)
@@ -127,7 +132,7 @@ background  = transform.scale(
 mixer.init()
 
 mixer.music.load('kuznechik-z_uki.mp3')
-"""mixer.music.play()"""
+mixer.music.play()
 
 player_1 = Player(200, 250, 30, 100, 5, "Racket_1.png")
 player_1.set_control(K_w, K_s, K_r)
@@ -148,14 +153,12 @@ win_1_label = Label(250, 200)
 win_2_label = Label(250, 200)
 
 
-
 score_p1_counter = 0
 score_p2_counter = 0
 hit_counter = 0
 win_1, win_2 = False, False
 
 def reset_game():
-
     score_p1_counter = 0
     score_p2_counter = 0
     hit_counter = 0
