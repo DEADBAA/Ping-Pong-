@@ -35,7 +35,6 @@ class Player(GameSprite):
         self.keys = {
             'UP': key_up,
             'DOWN': key_down,
-            "R": key_rest
         }
 
     def update(self):
