@@ -57,7 +57,7 @@ class Ping_Ball(GameSprite):
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
 
-        if self.rect.x <=0:
+        if self.rect.x <= 0:
             self.speed_x *= -1 
             self.hit_wall_sound.play()
             global score_p2_counter
@@ -72,27 +72,31 @@ class Ping_Ball(GameSprite):
         if self.rect.y <=0 or self.rect.y >= Win_H:
             self.speed_y *= -1 
 
-        if sprite.spritecollide(self, players, False):
-            possible_angles = [1, 2, 3]
-            self.hit_racket_sound.play()
+        for player in players:
+            if self.rect.colliderect(player.rect):
+                if self.speed_x > 0:
+                    self.rect.right = player.rect.left
+                elif self.speed_x < 0:
+                    self.rect.left = player.rect.right
 
-            if self.last_angle in possible_angles:
-                possible_angles.remove(self.last_angle)
-            new_angle = random.choice(possible_angles)
+                possible_angles = [1, 2, 3]
+                self.hit_racket_sound.play()
 
-            if new_angle == 1:
-                self.speed_y *= -1 
-                self.speed_x *= -1 
-            
-            if new_angle == 2:
-                self.speed_x *= -1 
-            
-            if new_angle == 3:
-                self.speed_y *= -1 
-            self.last_angle = new_angle
+                if self.last_angle in possible_angles:
+                    possible_angles.remove(self.last_angle)
+                new_angle = random.choice(possible_angles)
 
-            global hit_counter
-            hit_counter += 1
+                if new_angle == 1:
+                    self.speed_y *= -1 
+                    self.speed_x *= -1 
+                elif new_angle == 2:
+                    self.speed_x *= -1 
+                elif new_angle == 3:
+                    self.speed_y *= -1 
+
+                self.last_angle = new_angle
+                global hit_counter
+                hit_counter += 1
 
 class Label():
     def __init__(self, x, y):
