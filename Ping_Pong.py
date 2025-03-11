@@ -35,7 +35,7 @@ class Player(GameSprite):
         self.keys = {
             'UP': key_up,
             'DOWN': key_down,
-            "RESTART": key_rest
+            "R": key_rest
         }
 
     def update(self):
@@ -44,9 +44,7 @@ class Player(GameSprite):
             self.rect.y -= self.speed
         if key_pres[self.keys['DOWN']] and self.rect.y + self.speed <= Win_H - self.height:
             self.rect.y += self.speed
-        if key_pres[self.keys["RESTART"]] and (win_1 or win_2):
-            reset_game()
-                
+    
 
 class Ping_Ball(GameSprite):
     def __init__(self, x, y, width, height, speed, image_filename):
@@ -159,26 +157,37 @@ hit_counter = 0
 win_1, win_2 = False, False
 
 def reset_game():
+    global score_p1_counter
     score_p1_counter = 0
+    global score_p2_counter
     score_p2_counter = 0
+    global hit_counter
     hit_counter = 0
+
     win_1 = False
     win_2 = False
 
-    player_1 = Player(200, 250, 30, 100, 5, "Racket_1.png")
-    player_2 = Player(600, 250, 30, 100, 5, "Racket_2.png")
-    p_ball = Ping_Ball(400, 250, 20, 20, 5, "ball_.png")
+    player_1.rect.x = 200
+    player_1.rect.y = 250
+    
+    player_2.rect.x = 600
+    player_2.rect.y = 250
+
+    p_ball.rect.x = 400
+    p_ball.rect.y = 250
+
     players.empty()
     players.add(player_1)
     players.add(player_2)
 
-hit_counter = 0
 game = True
 while game:
     events = event.get()
     for e in events:
         if e.type == QUIT:
             game = False
+        if e.type == KEYDOWN and e.key == K_r:
+            reset_game()
 
     win.blit(background, (0, 0))
 
