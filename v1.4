@@ -35,6 +35,7 @@ class Player(GameSprite):
         self.keys = {
             'UP': key_up,
             'DOWN': key_down,
+            "R": key_rest
         }
 
     def update(self):
@@ -52,6 +53,7 @@ class Ping_Ball(GameSprite):
         self.last_angle = None
         self.hit_wall_sound = mixer.Sound("hit_wall.mp3")
         self.hit_racket_sound = mixer.Sound("hit_racket.mp3")
+        self.rect.center = (width * 2, height * 2)
         
     def update(self):
         self.rect.x += self.speed_x
@@ -63,13 +65,13 @@ class Ping_Ball(GameSprite):
             global score_p2_counter
             score_p2_counter += 1
             
-        if self.rect.x >= Win_W:
+        if self.rect.x + 40 >= Win_W:
             self.speed_x *= -1 
             self.hit_wall_sound.play()
             global score_p1_counter
             score_p1_counter += 1  
 
-        if self.rect.y <=0 or self.rect.y >= Win_H:
+        if self.rect.y <=0 or self.rect.y + 40 >= Win_H:
             self.speed_y *= -1 
 
         for player in players:
@@ -135,17 +137,17 @@ mixer.init()
 mixer.music.load('kuznechik-z_uki.mp3')
 mixer.music.play()
 
-player_1 = Player(200, 250, 30, 100, 5, "Racket_1.png")
+player_1 = Player(200, 200, 30, 100, 5, "Racket_1.png")
 player_1.set_control(K_w, K_s, K_r)
 
-player_2 = Player(600, 250, 30, 100, 5, "Racket_2.png")
+player_2 = Player(600, 200, 30, 100, 5, "Racket_2.png")
 player_2.set_control(K_UP, K_DOWN, K_h)
 
 players = sprite.Group()
 players.add(player_1)
 players.add(player_2)
 
-p_ball = Ping_Ball(400, 250, 20, 20, 5, "ball_.png")
+p_ball = Ping_Ball(400, 250, 50, 50, 5, "ball_.png", )
 
 point_p1_label = Label(10, 50)
 point_p2_label = Label(100, 50)
@@ -166,15 +168,16 @@ def reset_game():
     score_p2_counter = 0
     global hit_counter
     hit_counter = 0
-
+    global win_1
     win_1 = False
+    global win_2
     win_2 = False
 
     player_1.rect.x = 200
-    player_1.rect.y = 250
-    
+    player_1.rect.y = 200
+
     player_2.rect.x = 600
-    player_2.rect.y = 250
+    player_2.rect.y = 200
 
     p_ball.rect.x = 400
     p_ball.rect.y = 250
@@ -183,6 +186,7 @@ def reset_game():
     players.add(player_1)
     players.add(player_2)
 
+
 game = True
 while game:
     events = event.get()
@@ -190,8 +194,9 @@ while game:
         if e.type == QUIT:
             game = False
         if e.type == KEYDOWN and e.key == K_r:
-            reset_game()
-
+            if win_1 or win_2:
+                reset_game()
+            
     win.blit(background, (0, 0))
 
     if not win_1 and not win_2:
